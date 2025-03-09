@@ -1,7 +1,6 @@
+import { GITHUB_API_URL } from "@/utils/constants";
 import { getToken } from "@/utils/getToken";
 import { NextResponse } from "next/server";
-
-export const GITHUB_API_URL = "https://api.github.com";
 
 type RepoType = {
 	name: string;
