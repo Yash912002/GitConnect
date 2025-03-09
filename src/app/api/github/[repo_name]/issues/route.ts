@@ -1,13 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "@/utils/getToken";
-import { GITHUB_API_URL } from "@/utils/constants";
 
 export async function POST(
 	req: NextRequest,
 	context: { params: Promise<{ repo_name: string }> }
 ) {
-	const token = getToken();
-	if (token instanceof Response) return token;
+	const token = process.env.GITHUB_TOKEN;
+
+	if (!token) {
+		return NextResponse.json(
+			{
+				error: "Failed to fetch the token",
+			},
+			{ status: 404 }
+		);
+	}
 
 	const { repo_name: repositoryName } = await context.params;
 
@@ -31,7 +37,7 @@ export async function POST(
 
 	try {
 		const createIssue = await fetch(
-			`${GITHUB_API_URL}/repos/Yash912002/${repositoryName}/issues`,
+			`https://api.github.com/repos/Yash912002/${repositoryName}/issues`,
 			{
 				method: "POST",
 				headers: {

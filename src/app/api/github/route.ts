@@ -1,5 +1,3 @@
-import { GITHUB_API_URL } from "@/utils/constants";
-import { getToken } from "@/utils/getToken";
 import { NextResponse } from "next/server";
 
 type RepoType = {
@@ -10,12 +8,20 @@ type RepoType = {
 
 export async function GET() {
 	// Get the token
-	const token = getToken();
-	if (token instanceof Response) return token;
+	const token = process.env.GITHUB_TOKEN;
+
+	if (!token) {
+		return NextResponse.json(
+			{
+				error: "Failed to fetch the token",
+			},
+			{ status: 404 }
+		);
+	}
 
 	try {
 		// Fetch user profile
-		const userProfile = await fetch(`${GITHUB_API_URL}/user`, {
+		const userProfile = await fetch("https://api.github.com/user", {
 			headers: {
 				Authorization: `Bearer ${token}`,
 				Accept: "application/vnd.github+json",
@@ -32,7 +38,7 @@ export async function GET() {
 		const userData = await userProfile.json();
 
 		// Fetch all the repositories
-		const repositories = await fetch(`${GITHUB_API_URL}/user/repos`, {
+		const repositories = await fetch("https://api.github.com/user/repos", {
 			headers: {
 				Authorization: `Bearer ${token}`,
 				Accept: "application/vnd.github+json",
