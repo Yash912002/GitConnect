@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GITHUB_API_URL } from "../../route";
 import { getToken } from "@/utils/getToken";
+import { GITHUB_API_URL } from "@/utils/constants";
 
 export async function POST(
 	req: NextRequest,
-	{ params }: { params: { repo_name: string } }
+	context: { params: Promise<{ repo_name: string }> }
 ) {
 	const token = getToken();
 	if (token instanceof Response) return token;
 
-	const { repo_name: repositoryName } = params;
+	const { repo_name: repositoryName } = await context.params;
 
 	if (!repositoryName) {
 		return NextResponse.json(
